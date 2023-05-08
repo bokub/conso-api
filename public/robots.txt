@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /token
+
+Sitemap: https://conso.boris.sh/sitemap.xml
