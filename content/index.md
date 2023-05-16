@@ -64,13 +64,13 @@ Afin d'éviter les appels inutiles, je vous conseille d'effectuer une seule requ
 
 Si la requête ne remonte aucune donnée, vous pouvez réessayer en début d'après-midi. Toujours rien ? Laissez tomber et attendez un jour de plus.
 
-Dans tous les cas, ne soyez pas égoïste et évitez toute requête non nécessaire. Tout abus pourra conduire à un blockage de votre adresse IP sans aucun avertissement préalable. 
+Dans tous les cas, ne soyez pas égoïste et évitez toute requête non nécessaire. Tout abus pourra conduire à un blocage de votre adresse IP sans aucun avertissement préalable. 
 
 ## Vous avez d'autres questions ?
 
 Pour signaler un bug ou demander une fonctionnalité, n'hésitez pas à ouvrir une [nouvelle issue sur GitHub](https://github.com/bokub/conso-api/issues).
 
-Pour poser une question ou simplement pour discuter, rendez-vous sur l'espace [Github discussions](https://github.com/bokub/conso-api/discussions) !
+Pour poser une question ou simplement pour discuter, rendez-vous sur l'espace [GitHub discussions](https://github.com/bokub/conso-api/discussions) !
 
 Dans tous les cas, **n'utilisez pas** le formulaire de contact de mon site web `boris.sh`, réservé exclusivement à des demandes professionnelles. Toute demande d'aide reçue via ce formulaire sera ignorée.
 

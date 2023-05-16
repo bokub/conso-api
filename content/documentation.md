@@ -1,6 +1,6 @@
 # Documentation
 
-Le moyen le plus simple d'accéder aux données de Conso API est le module [@bokub/linky](https://github.com/bokub/linky#readme), mais il est également possible d'appeler directement l'API avec le langage de votre choix.
+Le moyen le plus simple d'accéder aux données de Conso API est le module [@bokub/linky](https://github.com/bokub/linky#readme), mais si vous n'utilisez pas Node.js, il est également possible d'appeler directement l'API avec le langage de votre choix.
 
 Toutes les routes de Conso API suivent le format suivant:
 

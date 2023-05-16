@@ -10,22 +10,23 @@ const { SANDBOX, REDIRECT_URI, CLIENT_ID, CLIENT_SECRET } = process.env;
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   try {
-    const prm = z.string().parse(req.query.usage_point_id);
+    const prms = z.string().parse(req.query.usage_point_id).split(',');
     const code = z.string().parse(req.query.code);
 
-    const { canAccessUsagePointId, allowedUsagePointId } = await validateCode(code, prm);
-    if (!canAccessUsagePointId) {
+    const allowed = SANDBOX ? [] : await getAllowedPRMs(code);
+
+    if (prms.some(prm => !allowed.includes(prm))) {
       res.status(403).send({
         status: 403,
         message: 'Accès au PRM non autorisé',
-        query: prm,
-        verified: allowedUsagePointId,
+        query: req.query,
+        allowed,
         detail: 'Prenez un screenshot de cette erreur et envoyez-la moi svp, merci !',
       });
       return;
     }
 
-    const authToken = generateToken(prm.split(','));
+    const authToken = generateToken(prms);
     res.setHeader('Set-Cookie', `conso-token=${authToken}; SameSite=Strict; Path=/`);
     res.redirect('/token');
   } catch (e) {
@@ -35,14 +36,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 };
 
 // This method uses a deprecated API, but it's the only way to ensure the usage_point_id found in the query string has not been tampered.
-function validateCode(code: string, prm: string) {
-  if (SANDBOX) {
-    return {
-      canAccessUsagePointId: true,
-      allowedUsagePointId: '',
-    };
-  }
-  const baseURI = SANDBOX ? 'https://gw.hml.api.enedis.fr' : 'https://gw.prd.api.enedis.fr';
+function getAllowedPRMs(code: string) {
+  const baseURI = 'https://gw.prd.api.enedis.fr';
   return axios({
     method: 'post',
     url: `${baseURI}/v1/oauth2/token`,
@@ -56,8 +51,5 @@ function validateCode(code: string, prm: string) {
       client_secret: CLIENT_SECRET,
       code,
     }),
-  }).then((response) => ({
-    canAccessUsagePointId: response.data.usage_points_id === prm,
-    allowedUsagePointId: response.data.usage_points_id,
-  }));
+  }).then((response) => response.data.usage_points_id.split(','));
 }
