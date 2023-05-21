@@ -21,7 +21,7 @@ Conso API remplace l'ancien service [conso.vercel.app](https://conso.vercel.app/
 
 Les données de votre compteur Linky récupérées tous les jours peuvent être consultées directement sur [votre espace client Enedis](https://mon-compte-client.enedis.fr/).
 
-Enedis propose également une API, mais celle-ci **n'est ouverte qu'aux entreprises** ayant signé un contrat chez eux. Conso API fait donc office d'entreprise intermédiaire afin de vous donner accès à cette API.
+Enedis propose également des APIs, mais celles-ci **ne sont ouvertes qu'aux entreprises** ayant signé un contrat chez eux. Conso API fait donc office d'entreprise intermédiaire afin de vous donner accès aux API _"Token V3"_ et _"Metering Data V5"_ d'Enedis.
 
 ## Mes données sont-elles en sécurité ?
 
@@ -64,7 +64,7 @@ Afin d'éviter les appels inutiles, je vous conseille d'effectuer une seule requ
 
 Si la requête ne remonte aucune donnée, vous pouvez réessayer en début d'après-midi. Toujours rien ? Laissez tomber et attendez un jour de plus.
 
-Dans tous les cas, ne soyez pas égoïste et évitez toute requête non nécessaire. Tout abus pourra conduire à un blocage de votre adresse IP sans aucun avertissement préalable. 
+Dans tous les cas, ne soyez pas égoïste et évitez toute requête non nécessaire. Tout abus pourra conduire à un blocage de votre adresse IP sans aucun avertissement préalable.
 
 ## Vous avez d'autres questions ?
 

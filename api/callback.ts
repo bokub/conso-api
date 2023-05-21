@@ -10,23 +10,16 @@ const { SANDBOX, REDIRECT_URI, CLIENT_ID, CLIENT_SECRET } = process.env;
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   try {
-    const prms = z.string().parse(req.query.usage_point_id).split(',');
+    const queryPRMs = z.string().parse(req.query.usage_point_id).split(',');
     const code = z.string().parse(req.query.code);
 
-    const allowed = SANDBOX ? [] : await getAllowedPRMs(code);
+    const allowedPRMs = SANDBOX ? queryPRMs : await getAllowedPRMs(code);
 
-    if (prms.some(prm => !allowed.includes(prm))) {
-      res.status(403).send({
-        status: 403,
-        message: 'Accès au PRM non autorisé',
-        query: req.query,
-        allowed,
-        detail: 'Prenez un screenshot de cette erreur et envoyez-la moi svp, merci !',
-      });
-      return;
+    if (allowedPRMs.some((prm) => !queryPRMs.includes(prm))) {
+      logger.warn({ message: 'query PRMs mismatch', queryPRMs, allowedPRMs });
     }
 
-    const authToken = generateToken(prms);
+    const authToken = generateToken(queryPRMs);
     res.setHeader('Set-Cookie', `conso-token=${authToken}; SameSite=Strict; Path=/`);
     res.redirect('/token');
   } catch (e) {
@@ -36,9 +29,9 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 };
 
 // This method uses a deprecated API, but it's the only way to ensure the usage_point_id found in the query string has not been tampered.
-function getAllowedPRMs(code: string) {
+async function getAllowedPRMs(code: string): Promise<string[]> {
   const baseURI = 'https://gw.prd.api.enedis.fr';
-  return axios({
+  const response = await axios({
     method: 'post',
     url: `${baseURI}/v1/oauth2/token`,
     headers: {
@@ -51,5 +44,6 @@ function getAllowedPRMs(code: string) {
       client_secret: CLIENT_SECRET,
       code,
     }),
-  }).then((response) => response.data.usage_points_id.split(','));
+  });
+  return response.data.usage_points_id.split(',');
 }
