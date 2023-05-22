@@ -16,10 +16,10 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     const allowedPRMs = SANDBOX ? queryPRMs : await getAllowedPRMs(code);
 
     if (allowedPRMs.some((prm) => !queryPRMs.includes(prm))) {
-      logger.warn({ message: 'query PRMs mismatch', queryPRMs, allowedPRMs });
+      logger.warn(`query PRMs mismatch. queryPRMs = ${queryPRMs.join(', ')}, allowedPRMs = ${allowedPRMs.join(', ')}`);
     }
 
-    const authToken = generateToken(queryPRMs);
+    const authToken = generateToken(allowedPRMs);
     res.setHeader('Set-Cookie', `conso-token=${authToken}; SameSite=Strict; Path=/`);
     res.redirect('/token');
   } catch (e) {
