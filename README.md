@@ -2,7 +2,7 @@
 
 <blockquote align="center">La passerelle open-source pour accéder à vos données Linky</blockquote>
 
-_____
+---
 
 **Conso API** est un service **gratuit** et open-source permettant à tous les particuliers d'accéder aux données de consommation et production de leur compteur Linky.
 
@@ -47,7 +47,7 @@ Si les données d'une journée ne sont pas encore présentes le lendemain de la 
 Les quotas suivants sont fixés par Enedis. Ils sont partagés par tous les utilisateurs du service Conso API.
 
 - Maximum de 5 requêtes par seconde
-- Maximum de 10 000 requêtes par heure
+- Maximum de 1000 requêtes par heure
 
 Même si ces quotas peuvent sembler élevés, le serveur de Conso API est limité en ressources, et ne pourra rester gratuit que si tous les utilisateurs se comportent raisonnablement.
 
