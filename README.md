@@ -1,8 +1,8 @@
-<h1 align="center">⚡ Conso API</h1>
+# ⚡ Conso API
 
-<blockquote align="center">La passerelle open-source pour accéder à vos données Linky</blockquote>
+> La passerelle open-source pour accéder à vos données Linky
 
----
+![curl screenshot](https://github.com/bokub/conso-api/assets/17952318/b2b90e90-dce2-464e-a335-669821479388)
 
 **Conso API** est un service **gratuit** et open-source permettant à tous les particuliers d'accéder aux données de consommation et production de leur compteur Linky.
 
