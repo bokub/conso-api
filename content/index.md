@@ -35,7 +35,7 @@ Enedis propose également des APIs, mais celles-ci **ne sont ouvertes qu'aux ent
 
 Le service est entièrement conçu et maintenu par une seule personne (moi-même).
 
-Je suis [développeur full-stack en freelance](https://boris.sh), et (entre autres) l'auteur du [module npm Linky](https://github.com/bokub/linky) depuis 2018.
+Je suis [développeur full-stack en freelance](https://cv.boris.sh), et (entre autres) l'auteur du [module npm Linky](https://github.com/bokub/linky) depuis 2018.
 
 Vous pouvez retrouver tous mes projets open-source sur [mon profil GitHub](https://github.com/bokub)
 
@@ -72,7 +72,7 @@ Pour signaler un bug ou demander une fonctionnalité, n'hésitez pas à ouvrir u
 
 Pour poser une question ou simplement pour discuter, rendez-vous sur l'espace [GitHub discussions](https://github.com/bokub/conso-api/discussions) !
 
-Dans tous les cas, **n'utilisez pas** le formulaire de contact de mon site web `boris.sh`, réservé exclusivement à des demandes professionnelles. Toute demande d'aide reçue via ce formulaire sera ignorée.
+Dans tous les cas, **n'utilisez pas** le formulaire de contact de mon site web `cv.boris.sh`, réservé exclusivement à des demandes professionnelles. Toute demande d'aide reçue via ce formulaire sera ignorée.
 
 ## C'est parti !
 
