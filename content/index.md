@@ -1,6 +1,14 @@
 **Conso API** est un service **gratuit** et [**open-source**](https://github.com/bokub/conso-api#readme) permettant à tous les particuliers d'accéder aux données de consommation et production de leur compteur Linky.
 
-Pour commencer à utiliser **Conso API**, vous devez accéder à votre espace personnel Enedis, puis donner votre accord pour partager vos données :
+Pour commencer à utiliser **Conso API**, vous devez accéder à votre espace personnel Enedis, puis donner votre accord pour partager vos données
+
+::alert
+Un bug côté Enedis empêche actuellement la génération de tokens pour plusieurs PRMs.
+<br/>
+Si vous possédez plusieurs compteurs, veillez à ne cocher qu'un PRM à la fois dans l'écran de consentement
+::
+
+<br/>
 
 ::authButton
 ::
@@ -13,6 +21,7 @@ Vous pouvez récupérer les données de Conso API de plusieurs façons différen
 
 - Directement via l'API (plus d'informations dans la [documentation de l'API](/documentation))
 - Via un outil en ligne de commande tel que [@bokub/linky](https://github.com/bokub/linky#readme)
+- Avec l'add-on pour Home Assistant [HA Linky](https://github.com/bokub/ha-linky#readme)
 - Dans vos propres programmes Node.js via la librairie [@bokub/linky](https://github.com/bokub/linky#readme)
 
 Conso API remplace l'ancien service [conso.vercel.app](https://conso.vercel.app/), qui ne fonctionnera plus à partir du 17 septembre 2023 suite à la fermeture de certaines APIs d'Enedis

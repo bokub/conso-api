@@ -14,6 +14,7 @@ Vous pouvez récupérer les données de Conso API de plusieurs façons différen
 
 - Directement via l'API (plus d'informations dans la [documentation de l'API](https://conso.boris.sh/documentation))
 - Via un outil en ligne de commande tel que [@bokub/linky](https://github.com/bokub/linky#readme)
+- Avec l'add-on pour Home Assistant [HA Linky](https://github.com/bokub/ha-linky#readme)
 - Dans vos propres programmes Node.js via la librairie [@bokub/linky](https://github.com/bokub/linky#readme)
 
 Conso API remplace l'ancien service [conso.vercel.app](https://conso.vercel.app/), qui ne fonctionnera plus à partir du 17 septembre 2023 suite à la fermeture de certaines APIs d'Enedis
