@@ -18,3 +18,4 @@ jobs:
           CLOUDFLARE_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT }}
           BLACKLIST_ID: ${{ secrets.BLACKLIST_ID }}
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          TZ: UTC

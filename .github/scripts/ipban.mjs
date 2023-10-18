@@ -3,9 +3,15 @@ $.verbose = false;
 
 const BAN_THRESHOLD = 100;
 const CHECK_INTERVAL_HOURS = 12;
+const BATCH = 500;
 
-const from = new Date();
-from.setHours(from.getHours() - CHECK_INTERVAL_HOURS);
+let to = new Date();
+to.setHours(to.getHours() < 12 ? 0 : 12, 0, 0, 0);
+
+const from = new Date(to);
+from.setHours(to.getHours() - CHECK_INTERVAL_HOURS);
+
+console.info(`Checking server logs from ${from.toISOString()} to ${to.toISOString()}...`);
 
 function anonymize(ip) {
   const separator = ip.includes(':') ? ':' : '.';
@@ -13,29 +19,44 @@ function anonymize(ip) {
   return [parts[0], parts[1].replace(/./g, '•'), parts[2].replace(/./g, '•'), parts[3]].join(separator);
 }
 
-const logsResponse = await fetch(
-  'https://logs.betterstack.com/api/v1/query?' +
-    new URLSearchParams({
-      from: from.toISOString(),
-      to: new Date().toISOString(),
-      batch: 1000,
-    }),
-  {
-    headers: {
-      Authorization: 'Bearer ' + process.env.LOGS_API_TOKEN,
-    },
+const allLogs = [];
+let loopIteration = 0;
+
+do {
+  const logsResponse = await fetch(
+    'https://logs.betterstack.com/api/v1/query?' +
+      new URLSearchParams({
+        from: from.toISOString(),
+        to: to.toISOString(),
+        batch: BATCH,
+        order: 'newest_first',
+      }),
+    {
+      headers: {
+        Authorization: 'Bearer ' + process.env.LOGS_API_TOKEN,
+      },
+    }
+  ).catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+
+  const { data } = await logsResponse.json();
+
+  if (data.length < BATCH) {
+    allLogs.push(...data);
+    break;
   }
-).catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
 
-const logsBody = await logsResponse.json();
+  to = new Date(data.pop().dt);
+  allLogs.push(...data);
+  loopIteration++;
+} while (loopIteration < 50);
 
-console.info(`Processing ${logsBody.data.length} logs...`);
+console.info(`Processing ${allLogs.length} logs...`);
 
 const ipMap = {};
-for (const log of logsBody.data) {
+for (const log of allLogs) {
   const rawIP = log['metadata.request.headers.x_real_ip'];
   const ip = rawIP.includes(':') ? rawIP.split(':').slice(0, 4).join(':') + '::/64' : rawIP;
   ipMap[ip] = (ipMap[ip] || 0) + 1;
