@@ -2,12 +2,6 @@
 
 Pour commencer à utiliser **Conso API**, vous devez accéder à votre espace personnel Enedis, puis donner votre accord pour partager vos données
 
-::alert
-Un bug côté Enedis empêche actuellement la génération de tokens pour plusieurs PRMs.
-<br/>
-Si vous possédez plusieurs compteurs, veillez à ne cocher qu'un PRM à la fois dans l'écran de consentement
-::
-
 <br/>
 
 ::authButton

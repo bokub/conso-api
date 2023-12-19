@@ -6,7 +6,7 @@ const logger = pino();
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   try {
-    const queryPRMs = z.string().parse(req.query.usage_point_id).split(',');
+    const queryPRMs = z.string().parse(req.query.usage_point_id).split(/[,;]/g);
 
     const authToken = generateToken(queryPRMs);
     res.setHeader('Set-Cookie', `conso-token=${authToken}; SameSite=Strict; Path=/`);

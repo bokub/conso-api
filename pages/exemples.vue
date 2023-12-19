@@ -7,11 +7,6 @@
         <div class="mb-4">
           Vous n'avez pas de token ? Obtenez-en un en acceptant de partager vos données depuis votre espace Enedis
         </div>
-        <Alert>
-          Un bug côté Enedis empêche actuellement la génération de tokens pour plusieurs PRMs.
-          <br />
-          Si vous possédez plusieurs compteurs, veillez à ne cocher qu'un PRM à la fois dans l'écran de consentement
-        </Alert>
         <AuthButton class="mt-6"></AuthButton>
       </div>
     </ClientOnly>
