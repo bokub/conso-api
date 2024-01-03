@@ -58,7 +58,11 @@ Afin d'éviter les appels inutiles, je vous conseille d'effectuer une seule requ
 
 Si la requête ne remonte aucune donnée, vous pouvez réessayer en début d'après-midi. Toujours rien ? Laissez tomber et attendez un jour de plus.
 
-Dans tous les cas, ne soyez pas égoïste et évitez toute requête non nécessaire. Tout abus pourra conduire à un blocage de votre adresse IP sans aucun avertissement préalable.
+Dans tous les cas, ne soyez pas égoïste et évitez toute requête non nécessaire.
+
+Tout abus pourra conduire à un **blocage de votre adresse IP** sans aucun avertissement préalable.
+
+Si votre IP se retrouve bloquée, sachez qu'il ne s'agit pas d'une erreur, mais bien la conséquence d'un abus significatif de votre part.
 
 ## Vous avez d'autres questions ?
 
@@ -66,4 +70,4 @@ Pour signaler un bug ou demander une fonctionnalité, n'hésitez pas à ouvrir u
 
 Pour poser une question ou simplement pour discuter, rendez-vous sur l'espace [GitHub discussions](https://github.com/bokub/conso-api/discussions) !
 
-Dans tous les cas, **n'utilisez pas** le formulaire de contact de mon site web `cv.boris.sh`, réservé exclusivement à des demandes professionnelles. Toute demande d'aide reçue via ce formulaire sera ignorée.
+Dans tous les cas, n'essayez pas de me contacter via mon site web `cv.boris.sh` ou mon compte LinkedIn, réservés exclusivement à des demandes **professionnelles**. Toute demande d'aide reçue ailleurs que sur GitHub sera ignorée.
