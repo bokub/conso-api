@@ -60,9 +60,11 @@ Si la requête ne remonte aucune donnée, vous pouvez réessayer en début d'apr
 
 Dans tous les cas, ne soyez pas égoïste et évitez toute requête non nécessaire.
 
-Tout abus pourra conduire à un **blocage de votre adresse IP** sans aucun avertissement préalable.
 
-Si votre IP se retrouve bloquée, sachez qu'il ne s'agit pas d'une erreur, mais bien la conséquence d'un abus significatif de votre part.
+> [!IMPORTANT]  
+> Tout abus pourra conduire à un **blocage de votre adresse IP** sans aucun avertissement préalable.
+>
+> Si votre IP se retrouve bloquée, sachez qu'il ne s'agit pas d'une erreur, mais bien la conséquence d'un abus significatif de votre part.
 
 ## Vous avez d'autres questions ?
 
