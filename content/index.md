@@ -2,15 +2,6 @@
 
 Pour commencer à utiliser **Conso API**, vous devez accéder à votre espace personnel Enedis, puis donner votre accord pour partager vos données
 
-::alert
-Il se peut que la page de consentement affiche le message _Compteur incompatible_, il s'agit d'un souci du côté d'**Enedis**.
-<br/>
-<br/>
-Si vous rencontrez ce problème, je vous invite à patienter et à revenir dans quelques jours, il n'y a **rien** que je puisse faire.
-::
-
-<br/>
-
 ::authButton
 ::
 
@@ -64,7 +55,7 @@ Si les données d'une journée ne sont pas encore présentes le lendemain de la 
 Les quotas suivants sont fixés par Enedis. Ils sont partagés par tous les utilisateurs du service Conso API.
 
 - Maximum de 5 requêtes par seconde
-- Maximum de 1000 requêtes par heure
+- Maximum de 10 000 requêtes par heure
 
 Même si ces quotas peuvent sembler élevés, le serveur de Conso API est limité en ressources, et ne pourra rester gratuit que si tous les utilisateurs se comportent raisonnablement.
 
@@ -83,6 +74,8 @@ Tout abus pourra conduire à un **blocage de votre adresse IP** sans aucun avert
 <br/>
 <br/>
 Si votre IP se retrouve bloquée, sachez qu'il ne s'agit pas d'une erreur, mais bien la conséquence d'un abus significatif de votre part.
+<br/>
+Il est inutile de me contacter pour réclamer un déblocage, je préfère consacrer mon temps à améliorer le service pour les utilisateurs respectueux de mon travail.
 ::
 
 ## Vous avez d'autres questions ?
