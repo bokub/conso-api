@@ -2,15 +2,6 @@
 
 Pour commencer à utiliser **Conso API**, vous devez accéder à votre espace personnel Enedis, puis donner votre accord pour partager vos données
 
-::alert
-Il se peut que la page de consentement affiche le message _Compteur incompatible_, il s'agit d'un souci du côté d'**Enedis**.
-<br/>
-<br/>
-Si vous rencontrez ce problème, je vous invite à patienter et à revenir dans quelques jours, il n'y a **rien** que je puisse faire.
-::
-
-<br/>
-
 ::authButton
 ::
 
