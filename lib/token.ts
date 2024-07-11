@@ -1,33 +1,42 @@
-import axios from 'axios';
 import * as qs from 'qs';
 import pino from 'pino';
+import { Env } from './env';
 
 const logger = pino();
-const { BASE_URL, CLIENT_ID, CLIENT_SECRET } = process.env;
 
-let token: string;
-let tokenExpiration: number;
+const KV_KEY = 'access_token';
 
-export async function getAPIToken(): Promise<string> {
-  if (token && new Date().getTime() < tokenExpiration) {
+export async function getAPIToken(env: Env): Promise<string> {
+  const token = await env.CONSO_API.get(KV_KEY);
+  if (token) {
     return token;
   }
 
-  const { data } = await axios({
-    method: 'post',
-    url: `${BASE_URL}/oauth2/v3/token?${qs.stringify({
+  const response = await fetch(
+    `${env.BASE_URL}/oauth2/v3/token?${qs.stringify({
       grant_type: 'client_credentials',
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
+      client_id: env.CLIENT_ID,
+      client_secret: env.CLIENT_SECRET,
     })}`,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  });
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    }
+  );
+
+  if (!response.ok) {
+    return Promise.reject(response);
+  }
+
+  const data: { access_token: string } = await response.json();
   logger.info({ message: 'token refreshed', token: data.access_token });
 
-  token = data.access_token;
-  tokenExpiration = new Date().getTime() + 3 * 3600 * 1000; // token expiration is 3 hours later
+  // Save in KV store
+  await env.CONSO_API.put(KV_KEY, data.access_token, {
+    expirationTtl: 3 * 3600, // token expiration is 3 hours later
+  });
 
-  return token;
+  return data.access_token;
 }

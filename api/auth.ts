@@ -1,13 +1,11 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { Env } from '../lib/env';
 
-const { CLIENT_ID, SANDBOX } = process.env;
-
-export default (req: VercelRequest, res: VercelResponse) => {
+export const onRequest: PagesFunction<Env> = async ({ request: req, env }) => {
   const state = 'v2_' + Array.from({ length: 8 }, () => Math.random().toString(36)[2]).join('');
-  const baseURI = SANDBOX ? 'https://ext.hml.api.enedis.fr' : 'https://mon-compte-particulier.enedis.fr';
+  const baseURI = env.SANDBOX ? 'https://ext.hml.api.enedis.fr' : 'https://mon-compte-particulier.enedis.fr';
 
-  return res.redirect(
+  return Response.redirect(
     `${baseURI}/dataconnect/v1/oauth2/authorize` +
-      `?client_id=${CLIENT_ID}&state=${state}&duration=P3Y&response_type=code`
+      `?client_id=${env.CLIENT_ID}&state=${state}&duration=P3Y&response_type=code`
   );
 };

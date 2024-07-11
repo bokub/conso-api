@@ -1,14 +1,13 @@
 import axios from 'axios';
 import * as qs from 'qs';
-import { VercelRequest, VercelResponse } from '@vercel/node';
 import pino from 'pino';
 import { z } from 'zod';
 import { getAPIToken } from '../lib/token';
 import { dataPoints, dataURLs } from '../lib/url';
 import { isTokenValid } from '../lib/auth';
+import { Env } from '../lib/env';
 
 const logger = pino();
-const { BASE_URL } = process.env;
 
 const schema = z.object({
   type: z.enum(dataPoints),
@@ -17,53 +16,71 @@ const schema = z.object({
   end: z.string().regex(/20[0-9]{2}-[0-9]{2}-[0-9]{2}/),
 });
 
-export default async (req: VercelRequest, res: VercelResponse) => {
+export const onRequest: PagesFunction<Env> = async ({ request: req, params, env }) => {
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return new Response(null, {
+      status: 200,
+    });
   }
   if (req.method !== 'GET') {
-    res.status(405).send({ status: 405, message: 'Seule la méthode GET est autorisée' });
-    return;
+    return Response.json({ status: 405, message: 'Seule la méthode GET est autorisée' }, { status: 405 });
   }
 
-  // Validate query string
-  const input = schema.safeParse(req.query);
-  if (!input.success) {
-    res.status(400).send({
-      status: 400,
-      message: 'Paramètres invalides',
-      error: input.error,
-    });
-    return;
+  const { BASE_URL, JWT_SECRET } = env;
+  const { searchParams } = new URL(req.url);
+
+  // Validate input
+  const input = schema.safeParse({
+    type: params.type,
+    prm: searchParams.get('prm'),
+    start: searchParams.get('start'),
+    end: searchParams.get('end'),
+  });
+
+  if (input.success === false) {
+    return Response.json(
+      {
+        status: 400,
+        message: 'Paramètres invalides',
+        error: input.error,
+      },
+      { status: 400 }
+    );
   }
 
   const { type, prm, start, end } = input.data;
 
   // Validate user token
-  const userToken = req.headers.authorization?.split(' ')[1];
+  const authHeader = req.headers.get('Authorization');
+  const userToken = authHeader?.split(' ')[1];
   if (!userToken) {
-    res.status(400).send({ status: 400, message: "Le header 'Authorization' est manquant ou invalide" });
-    return;
+    return Response.json(
+      { status: 400, message: "Le header 'Authorization' est manquant ou invalide" },
+      { status: 400 }
+    );
   }
-  if (!isTokenValid(userToken, prm)) {
-    res.status(401).send({ status: 401, message: "Votre token est invalide ou ne permet pas d'accéder à ce PRM" });
-    return;
+  if (!(await isTokenValid(userToken, prm, JWT_SECRET))) {
+    return Response.json(
+      { status: 401, message: "Votre token est invalide ou ne permet pas d'accéder à ce PRM" },
+      { status: 401 }
+    );
   }
 
   // Get Enedis token
   let apiToken: string;
   try {
-    apiToken = await getAPIToken();
+    apiToken = await getAPIToken(env);
   } catch (e) {
     logger.error({ message: 'cannot refresh token', error: e });
-    res.status(500).send({ status: 500, message: 'Impossible de rafraîchir le token. Réessayez plus tard' });
-    return;
+    return Response.json(
+      { status: 500, message: 'Impossible de rafraîchir le token. Réessayez plus tard' },
+      { status: 500 }
+    );
   }
 
   // Fetch data
   try {
-    const { data } = await axios.get(
+    const response = await fetch(
       `${BASE_URL}/${dataURLs[type]}?${qs.stringify({
         start,
         end,
@@ -77,19 +94,22 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         },
       }
     );
-    res.send(data.meter_reading);
-  } catch (e) {
-    if (axios.isAxiosError(e) && e.response?.status && e.response?.data) {
-      logger.error({ message: 'cannot retrieve data from Enedis', error: e.toJSON() });
-      res.status(e.response.status).send({
-        status: e.response.status,
-        message: 'The Enedis API returned an error',
-        error: e.response.data,
-      });
-    } else {
-      logger.error({ message: 'cannot call Enedis', error: e });
 
-      res.status(500).send({ status: 500, message: 'Erreur inconnue. Réessayez plus tard' });
+    if (!response.ok) {
+      return Response.json(
+        {
+          status: response.status,
+          message: 'The Enedis API returned an error',
+          error: await response.json(),
+        },
+        { status: response.status }
+      );
     }
+
+    const data: { meter_reading: any } = await response.json();
+    return Response.json(data.meter_reading);
+  } catch (e) {
+    logger.error({ message: 'cannot call Enedis', error: e });
+    return Response.json({ status: 500, message: 'Erreur inconnue. Réessayez plus tard' }, { status: 500 });
   }
 };
