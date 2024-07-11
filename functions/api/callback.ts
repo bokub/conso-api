@@ -1,5 +1,5 @@
-import { generateToken } from '../lib/auth';
-import { Env } from '../lib/env';
+import { generateToken } from '../../lib/auth';
+import { Env } from '../../lib/env';
 import { z } from 'zod';
 import pino from 'pino';
 const logger = pino();

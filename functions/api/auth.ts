@@ -1,4 +1,4 @@
-import { Env } from '../lib/env';
+import { Env } from '../../lib/env';
 
 export const onRequest: PagesFunction<Env> = async ({ request: req, env }) => {
   const state = 'v2_' + Array.from({ length: 8 }, () => Math.random().toString(36)[2]).join('');

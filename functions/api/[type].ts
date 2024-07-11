@@ -2,10 +2,10 @@ import axios from 'axios';
 import * as qs from 'qs';
 import pino from 'pino';
 import { z } from 'zod';
-import { getAPIToken } from '../lib/token';
-import { dataPoints, dataURLs } from '../lib/url';
-import { isTokenValid } from '../lib/auth';
-import { Env } from '../lib/env';
+import { getAPIToken } from '../../lib/token';
+import { dataPoints, dataURLs } from '../../lib/url';
+import { isTokenValid } from '../../lib/auth';
+import { Env } from '../../lib/env';
 
 const logger = pino();
 
