@@ -24,12 +24,13 @@ let loopIteration = 0;
 
 do {
   const logsResponse = await fetch(
-    'https://logs.betterstack.com/api/v1/query?' +
+    'https://logs.betterstack.com/api/v2/query/live-tail?' +
       new URLSearchParams({
         from: from.toISOString(),
         to: to.toISOString(),
         batch: BATCH,
         order: 'newest_first',
+        source_ids: 271774,
       }),
     {
       headers: {
