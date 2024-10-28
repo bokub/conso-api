@@ -7,6 +7,12 @@ Pour commencer à utiliser **Conso API**, vous devez accéder à votre espace pe
 
 À la fin de l'étape de consentement, vous obtiendrez un token personnel qui vous permettra de tester l'API depuis la page [exemples](/exemples).
 
+::alert
+**Enedis** rencontre un problème technique qui empêche les nouveaux utilisateurs d'accéder à l'étape de consentement de partage de données.
+<br/><br/>
+Vous pouvez suivre la discussion sur <a href="https://github.com/bokub/conso-api/issues/62">Github</a> pour être tenu informé.
+::
+
 ## Comment utiliser Conso API ?
 
 Vous pouvez récupérer les données de Conso API de plusieurs façons différentes :
