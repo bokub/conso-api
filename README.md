@@ -52,6 +52,26 @@ Les quotas suivants sont fixés par Enedis. Ils sont partagés par tous les util
 
 Même si ces quotas peuvent sembler élevés, le serveur de Conso API est limité en ressources, et ne pourra rester gratuit que si tous les utilisateurs se comportent raisonnablement.
 
+### Configuration
+Pour que la collecte de données via Conso API soit possible, il est nécessaire d'activer l'enregistrement et la collecte de vos consommations par Enedis.
+
+Pour cela, rendez-vous sur la page données de votre compte [**Enedis**](https://mon-compte-particulier.enedis.fr/donnees) et activez **"Enregistrement de la consommation horaire"** ainsi que **"Collecte de la consommation horaire"**.
+
+![enedis configuration](public/enedis-config.png)
+
+Une absence d'activation de ces services provoquera une réponse invalide d'Enedis sous la forme suivante:
+```
+{
+  "status": 404,
+  "message": "The Enedis API returned an error",
+  "error": {
+    "error": "no_data_found",
+    "error_description": "no measure found for this usage point"
+  }
+}
+```
+
+
 ### Conseils d'utilisation
 
 Afin d'éviter les appels inutiles, je vous conseille d'effectuer une seule requête par jour, entre 6h et 10h, à un horaire pas trop précis : si vous choisissez _9:00:00_ et que tout le monde fait comme vous, votre requête sera bloquée à cause du quota expliqué plus haut. À _8:34:45_ ? Beaucoup moins probable.
