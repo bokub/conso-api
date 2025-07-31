@@ -3,7 +3,16 @@ $.verbose = false;
 
 const BAN_THRESHOLD = 100;
 const CHECK_INTERVAL_HOURS = 12;
-const BATCH = 500;
+
+const {
+  LOGS_API_USER,
+  LOGS_API_PASSWORD,
+  LOGS_API_TEAM,
+  LOGS_API_SOURCE,
+  CLOUDFLARE_ACCOUNT,
+  BLACKLIST_ID,
+  CLOUDFLARE_TOKEN,
+} = process.env;
 
 let to = new Date();
 to.setHours(to.getHours() < 12 ? 0 : 12, 0, 0, 0);
@@ -19,56 +28,56 @@ function anonymize(ip) {
   return [parts[0], parts[1].replace(/./g, '•'), parts[2].replace(/./g, '•'), parts[3]].join(separator);
 }
 
-const allLogs = [];
-let loopIteration = 0;
-
-do {
-  const logsResponse = await fetch(
-    'https://logs.betterstack.com/api/v2/query/live-tail?' +
-      new URLSearchParams({
-        from: from.toISOString(),
-        to: to.toISOString(),
-        batch: BATCH,
-        order: 'newest_first',
-        source_ids: 271774,
-      }),
-    {
-      headers: {
-        Authorization: 'Bearer ' + process.env.LOGS_API_TOKEN,
-      },
-    }
-  ).catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
-
-  const { data } = await logsResponse.json();
-
-  if (data.length < BATCH) {
-    allLogs.push(...data);
-    break;
+async function queryLogsByIP(startDate, endDate) {
+  // Validate required environment variables
+  if (!LOGS_API_USER || !LOGS_API_PASSWORD || !LOGS_API_TEAM || !LOGS_API_SOURCE) {
+    throw new Error('Missing required environment variables');
   }
 
-  to = new Date(data.pop().dt);
-  allLogs.push(...data);
-  loopIteration++;
-} while (loopIteration < 50);
+  // Build WHERE clause for date filtering
+  const whereClause = `toDate(dt) >= '${startDate.toISOString().split('T')[0]}'
+     AND toDate(dt) <= '${endDate.toISOString().split('T')[0]}' 
+     AND getJSON(raw, 'metadata.request.headers.cf_connecting_ip') IS NOT NULL`;
 
-console.info(`Processing ${allLogs.length} logs...`);
+  // Build the SQL query
+  const sqlQuery = `SELECT 
+    getJSON(raw, 'metadata.request.headers.cf_connecting_ip') as ip,
+    count(*) as count
+FROM (
+    SELECT dt, raw 
+    FROM remote(${LOGS_API_TEAM}_${LOGS_API_SOURCE}_logs)
+    UNION ALL
+    SELECT dt, raw 
+    FROM s3Cluster(primary, ${LOGS_API_TEAM}_${LOGS_API_SOURCE}_s3)
+)
+WHERE ${whereClause}
+GROUP BY ip
+ORDER BY count DESC
+FORMAT JSONEachRow`;
 
-const ipMap = {};
-for (const log of allLogs) {
-  const rawIP = log['metadata.request.headers.x_real_ip'];
-  const ip = rawIP.includes(':') ? rawIP.split(':').slice(0, 4).join(':') + '::/64' : rawIP;
-  ipMap[ip] = (ipMap[ip] || 0) + 1;
+  // Make the HTTP request
+  const response = await fetch('https://eu-nbg-2-connect.betterstackdata.com', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain',
+      Authorization: 'Basic ' + Buffer.from(`${LOGS_API_USER}:${LOGS_API_PASSWORD}`).toString('base64'),
+    },
+    body: sqlQuery,
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`HTTP error! status: ${response.status}, statusText: ${response.statusText}, body: ${errorText}`);
+  }
+  const responseText = await response.text();
+  return responseText.trim().split('\n').map(JSON.parse);
 }
 
-const bans = Object.entries(ipMap)
-  .filter(([, count]) => count >= BAN_THRESHOLD)
-  .map(([ip, count]) => ({
-    comment: `${count} requests / ${CHECK_INTERVAL_HOURS} hours`,
-    ip,
-  }));
+const logs = await queryLogsByIP(from, to);
+
+const bans = logs
+  .filter(({ count }) => count >= BAN_THRESHOLD)
+  .map(({ ip, count }) => ({ comment: `${count} requests / ${CHECK_INTERVAL_HOURS} hours`, ip }));
 
 if (bans.length === 0) {
   console.info('No IP to ban');
@@ -80,11 +89,11 @@ for (const ban of bans) {
   console.info(`${anonymize(ban.ip)} - ${ban.comment}`);
 }
 
-const cloudflareURL = `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT}/rules/lists/${process.env.BLACKLIST_ID}/items`;
+const cloudflareURL = `https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT}/rules/lists/${BLACKLIST_ID}/items`;
 const banResponse = await fetch(cloudflareURL, {
   method: 'POST',
   body: JSON.stringify(bans),
-  headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + process.env.CLOUDFLARE_TOKEN },
+  headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + CLOUDFLARE_TOKEN },
 });
 
 if (banResponse.status !== 200) {
