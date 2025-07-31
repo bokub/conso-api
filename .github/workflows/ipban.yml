@@ -14,8 +14,11 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: npm run ipban
         env:
-          LOGS_API_TOKEN: ${{ secrets.LOGS_API_TOKEN }}
           CLOUDFLARE_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT }}
           BLACKLIST_ID: ${{ secrets.BLACKLIST_ID }}
           CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+          LOGS_API_USER: ${{ secrets.LOGS_API_USER }}
+          LOGS_API_PASSWORD: ${{ secrets.LOGS_API_PASSWORD }}
+          LOGS_API_TEAM: ${{ secrets.LOGS_API_TEAM }}
+          LOGS_API_SOURCE: ${{ secrets.LOGS_API_SOURCE }}
           TZ: UTC
