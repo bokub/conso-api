@@ -53,6 +53,7 @@ Les quotas suivants sont fixés par Enedis. Ils sont partagés par tous les util
 Même si ces quotas peuvent sembler élevés, le serveur de Conso API est limité en ressources, et ne pourra rester gratuit que si tous les utilisateurs se comportent raisonnablement.
 
 ### Configuration
+
 Pour que la collecte de données via Conso API soit possible, il est nécessaire d'activer l'enregistrement et la collecte de vos consommations par Enedis.
 
 Pour cela, rendez-vous sur la page données de votre compte [**Enedis**](https://mon-compte-particulier.enedis.fr/donnees) et activez **"Enregistrement de la consommation horaire"** ainsi que **"Collecte de la consommation horaire"**.
@@ -60,6 +61,7 @@ Pour cela, rendez-vous sur la page données de votre compte [**Enedis**](https:/
 ![enedis configuration](public/enedis-config.png)
 
 Une absence d'activation de ces services provoquera une réponse invalide d'Enedis sous la forme suivante:
+
 ```
 {
   "status": 404,
@@ -71,7 +73,6 @@ Une absence d'activation de ces services provoquera une réponse invalide d'Ened
 }
 ```
 
-
 ### Conseils d'utilisation
 
 Afin d'éviter les appels inutiles, je vous conseille d'effectuer une seule requête par jour, entre 6h et 10h, à un horaire pas trop précis : si vous choisissez _9:00:00_ et que tout le monde fait comme vous, votre requête sera bloquée à cause du quota expliqué plus haut. À _8:34:45_ ? Beaucoup moins probable.
@@ -80,7 +81,7 @@ Si la requête ne remonte aucune donnée, vous pouvez réessayer en début d'apr
 
 Dans tous les cas, ne soyez pas égoïste et **évitez toute requête non nécessaire**.
 
-Si vous souhaitez récupérer un gros volume de données (tout votre historique par exemple), passez plutôt par votre espace client Enedis, qui propose des exports au format CSV.
+Si vous souhaitez récupérer un gros volume de données (tout votre historique de consommation par exemple), utilisez plutôt mon extension [Conso downloader](https://github.com/bokub/conso-downloader?tab=readme-ov-file)
 
 > [!IMPORTANT]  
 > Tout abus pourra conduire à un **blocage de votre adresse IP** sans aucun avertissement préalable.

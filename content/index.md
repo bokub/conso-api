@@ -67,7 +67,7 @@ Si la requête ne remonte aucune donnée, vous pouvez réessayer en début d'apr
 
 Dans tous les cas, ne soyez pas égoïste et **évitez toute requête non nécessaire**.
 
-Si vous souhaitez récupérer un gros volume de données (tout votre historique par exemple), passez plutôt par votre espace client Enedis, qui propose des exports au format CSV.
+Si vous souhaitez récupérer un gros volume de données (tout votre historique de consommation par exemple), utilisez plutôt mon extension [Conso downloader](https://github.com/bokub/conso-downloader?tab=readme-ov-file)
 
 ::alert
 Tout abus pourra conduire à un **blocage de votre adresse IP** sans aucun avertissement préalable.
