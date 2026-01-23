@@ -96,11 +96,18 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, params, env 
     );
 
     if (!response.ok) {
+      let responseError: string | Record<string, any> = await response.text();
+      try {
+        responseError = JSON.parse(responseError);
+      } catch (e) {
+        // do nothing, keep responseError as text
+      }
+
       return Response.json(
         {
           status: response.status,
           message: 'The Enedis API returned an error',
-          error: await response.json(),
+          error: responseError,
         },
         { status: response.status }
       );
