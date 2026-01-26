@@ -90,7 +90,7 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, params, env 
         headers: {
           Accept: 'application/json',
           Authorization: 'Bearer ' + apiToken,
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
       }
     );
