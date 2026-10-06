@@ -20,11 +20,13 @@
       <div class="w-full">
         <label for="data" class="form-label">Type de donnée</label>
         <select v-model="dataType" id="data" class="form-input">
-          <option value="daily_consumption">Consommation quotidienne</option>
-          <option value="consumption_load_curve">Courbe de charge de consommation</option>
-          <option value="consumption_max_power">Puissance maximale de consommation</option>
-          <option value="daily_production">Production quotidienne</option>
-          <option value="production_load_curve">Courbe de charge de production</option>
+          <option value="consommation_quotidienne">Consommation quotidienne</option>
+          <option value="production_quotidienne">Production quotidienne</option>
+          <option value="puissance_conso_max_quotidienne">Puissance maximale de consommation</option>
+          <option value="courbe_de_charge_consommation">Courbe de charge de consommation</option>
+          <option value="courbe_de_charge_production">Courbe de charge de production</option>
+          <option value="index_consommation">Index de consommation</option>
+          <option value="index_production">Index de production</option>
         </select>
       </div>
 
@@ -34,6 +36,24 @@
           <option v-for="p in prmListFromToken" :key="p" :value="p">{{ p }}</option>
         </select>
         <input v-else v-model="prm" id="prm" type="text" class="form-input" />
+      </div>
+    </div>
+
+    <div v-if="dataType === 'puissance_conso_max_quotidienne'" class="flex flex-col gap-6 md:flex-row">
+      <div class="w-full">
+        <label for="mesuresPas" class="form-label">Pas de mesure</label>
+        <select v-model="mesuresPas" id="mesuresPas" class="form-input">
+          <option value="P1D">Quotidien (P1D)</option>
+          <option value="P1M">Mensuel (P1M)</option>
+        </select>
+      </div>
+
+      <div class="w-full">
+        <label for="grandeurPhysique" class="form-label">Grandeur physique</label>
+        <select v-model="grandeurPhysique" id="grandeurPhysique" class="form-input">
+          <option value="PMA">Puissance maximale équivalente monophasée (PMA)</option>
+          <option value="TOUT">Toutes les phases (TOUT)</option>
+        </select>
       </div>
     </div>
 
@@ -66,17 +86,6 @@
       </ProseCode>
     </div>
 
-    <div>
-      <div class="font-medium">
-        Commande
-        <ProseA href="https://github.com/bokub/linky#readme"><ProseCodeInline>@bokub/linky</ProseCodeInline></ProseA>
-      </div>
-      <CodeBlock class="!mt-2 !mb-0" :code="cliCommand" v-if="cliCommand" lang="bash"></CodeBlock>
-      <ProseCode class="!mt-2 !mb-0" v-else>
-        <div class="p-4">Remplissez les champs ci-dessus pour voir l'exemple</div>
-      </ProseCode>
-    </div>
-
     <div class="text-center">
       <button
         type="button"
@@ -97,7 +106,7 @@
       <prose-hr></prose-hr>
       <prose-h3 id="resultats" class="!my-0">Résultats</prose-h3>
 
-      <div v-if="testResult['interval_reading']">
+      <div v-if="hasChartData">
         <div class="font-medium mb-2">Graphique</div>
         <canvas id="chart"></canvas>
       </div>
@@ -116,8 +125,11 @@
   import { Chart, Colors, BarController, CategoryScale, LinearScale, BarElement, Tooltip } from 'chart.js';
 
   type APIResult = {
-    interval_reading: Array<{ date: string; value: number }>;
-    reading_type: { unit: string; measurement_kind: string };
+    grandeur?: Array<{
+      grandeurMetier?: string;
+      unite?: string;
+      points?: Array<{ d: string; v: string }>;
+    }>;
   };
 
   Chart.register(Colors, BarController, CategoryScale, LinearScale, BarElement, Tooltip);
@@ -134,8 +146,10 @@
     hadToken.value = !!token.value;
   });
 
-  const dataType = ref('daily_consumption');
+  const dataType = ref('consommation_quotidienne');
   const prm = ref('');
+  const mesuresPas = ref('P1D');
+  const grandeurPhysique = ref('PMA');
 
   const date = new Date();
   const end = ref(date.toISOString().slice(0, 10));
@@ -145,6 +159,7 @@
   const isLoading: Ref<boolean> = ref(false);
   const testResult: Ref<null | APIResult> = ref(null);
   const jsonTestResult: ComputedRef<string> = computed(() => JSON.stringify(testResult.value, null, 2));
+  const hasChartData = computed(() => testResult.value?.grandeur?.some((grandeur) => grandeur.points?.length));
 
   const prmListFromToken = computed(() => {
     try {
@@ -160,11 +175,23 @@
     }
   });
 
-  const endpointURL = computed(() =>
-    prm.value && start.value && end.value
-      ? `${window.location.protocol}//${window.location.host}/api/${dataType.value}?prm=${prm.value}&start=${start.value}&end=${end.value}`
-      : ''
-  );
+  const endpointURL = computed(() => {
+    if (!prm.value || !start.value || !end.value) {
+      return '';
+    }
+
+    const query = new URLSearchParams({
+      pointId: prm.value,
+      dateDebut: start.value,
+      dateFin: end.value,
+    });
+    if (dataType.value === 'puissance_conso_max_quotidienne') {
+      query.set('mesuresPas', mesuresPas.value);
+      query.set('grandeurPhysique', grandeurPhysique.value);
+    }
+
+    return `${window.location.protocol}//${window.location.host}/api/${dataType.value}?${query}`;
+  });
 
   const cURLCommand = computed(() =>
     endpointURL.value && token.value
@@ -172,18 +199,6 @@
     '${endpointURL.value}' \\
     -H 'Authorization: Bearer ${token.value}'`
       : ''
-  );
-
-  const dataTypeToCommand: { [key: string]: string } = {
-    daily_consumption: 'daily',
-    consumption_load_curve: 'loadcurve',
-    consumption_max_power: 'maxpower',
-    daily_production: 'dailyprod',
-    production_load_curve: 'loadcurveprod',
-  };
-
-  const cliCommand = computed(() =>
-    start.value && end.value ? `linky ${dataTypeToCommand[dataType.value]} -s ${start.value} -e ${end.value}` : ''
   );
 
   function testAPI() {
@@ -213,7 +228,14 @@
 
   function plotGraph() {
     const chartElement: any | null = document.getElementById('chart');
-    const data = testResult.value?.interval_reading;
+    const data = testResult.value?.grandeur?.flatMap((grandeur) =>
+      (grandeur.points ?? []).map((point) => ({
+        date: point.d,
+        value: Number(point.v),
+        label: grandeur.grandeurMetier ?? '',
+        unit: grandeur.unite ?? '',
+      }))
+    );
     if (!chartElement) {
       console.error('Cannot find chart canvas');
       return;
@@ -223,8 +245,6 @@
       return;
     }
 
-    const unit = testResult.value?.reading_type?.unit;
-    const kind = testResult.value?.reading_type?.measurement_kind;
     const formatter = new Intl.NumberFormat('fr-FR');
 
     new Chart(chartElement, {
@@ -233,7 +253,7 @@
         labels: data.map((row) => row.date),
         datasets: [
           {
-            label: testResult.value?.reading_type?.measurement_kind || '',
+            label: data[0]?.label || '',
             data: data.map((row) => row.value),
           },
         ],
@@ -251,10 +271,10 @@
             callbacks: {
               label: function (context) {
                 return [
-                  kind ? kind.charAt(0).toUpperCase() + kind.slice(1) + ' : ' : '',
+                  data[context.dataIndex]?.label ? `${data[context.dataIndex].label} : ` : '',
                   formatter.format(context.parsed.y || 0),
                   ' ',
-                  unit,
+                  data[context.dataIndex]?.unit,
                 ].join('');
               },
             },
