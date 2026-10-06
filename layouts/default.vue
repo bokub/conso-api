@@ -13,6 +13,7 @@
         <NuxtLink to="/" active-class="font-bold" class="mr-6">Accueil</NuxtLink>
         <NuxtLink to="/exemples" active-class="font-bold" class="mr-6">Exemples</NuxtLink>
         <NuxtLink to="/documentation" active-class="font-bold" class="mr-6">Documentation</NuxtLink>
+        <NuxtLink to="/migration-2026" active-class="font-bold" class="mr-6">Migration 2026</NuxtLink>
         <a href="https://github.com/bokub/conso-api#readme" title="GitHub" target="_blank">
           <Icon name="fa-brands:github" class="w-5 h-5" />
         </a>

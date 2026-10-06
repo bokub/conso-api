@@ -8,6 +8,10 @@
 
 #### Pour commencer à utiliser Conso API, rendez-vous sur [conso.boris.sh](https://conso.boris.sh) !
 
+Si le consentement échoue, vous pouvez essayer de résilier l'accès existant de Conso API depuis la page [partage de mes données avec des tiers](https://mon-compte-particulier.enedis.fr/partage-donnees-tiers), puis de redonner votre autorisation.
+
+> **Migration 2026 :** Enedis prévoit de couper les anciennes API legacy à la mi-octobre 2026. Les appels utilisant les anciens types échoueront après cette coupure. [Consultez le guide de migration](https://conso.boris.sh/migration-2026) pour adapter vos requêtes.
+
 ## Comment utiliser Conso API ?
 
 Vous pouvez récupérer les données de Conso API de plusieurs façons différentes :
@@ -23,7 +27,7 @@ Conso API remplace l'ancien service [conso.vercel.app](https://conso.vercel.app/
 
 Les données de votre compteur Linky récupérées tous les jours peuvent être consultées directement sur [votre espace client Enedis](https://mon-compte-client.enedis.fr/).
 
-Enedis propose également des APIs, mais celles-ci **ne sont ouvertes qu'aux entreprises** ayant signé un contrat chez eux. Conso API fait donc office d'entreprise intermédiaire afin de vous donner accès aux API _"Token V3"_ et _"Metering Data V5"_ d'Enedis.
+Enedis propose également des APIs, mais celles-ci **ne sont ouvertes qu'aux entreprises** ayant signé un contrat chez eux. Conso API fait donc office d'entreprise intermédiaire afin de vous donner accès à l'API d'authentification _"Token V3"_ et à l'API _"Mesure synchrone v2"_ d'Enedis.
 
 ## Mes données sont-elles en sécurité ?
 
@@ -56,9 +60,7 @@ Même si ces quotas peuvent sembler élevés, le serveur de Conso API est limit�
 
 Pour que la collecte de données via Conso API soit possible, il est nécessaire d'activer l'enregistrement et la collecte de vos consommations par Enedis.
 
-Pour cela, rendez-vous sur la page données de votre compte [**Enedis**](https://mon-compte-particulier.enedis.fr/donnees) et activez **"Enregistrement de la consommation horaire"** ainsi que **"Collecte de la consommation horaire"**.
-
-![enedis configuration](public/enedis-config.png)
+Pour cela, rendez-vous sur la page [**Enregistrement et collecte de mes données**](https://mon-compte-particulier.enedis.fr/enregistrement-collecte-donnees) de votre compte Enedis et activez **"Enregistrement de la consommation horaire"** ainsi que **"Collecte de ma consommation horaire"**.
 
 Une absence d'activation de ces services provoquera une réponse invalide d'Enedis sous la forme suivante:
 

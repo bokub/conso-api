@@ -5,9 +5,11 @@ Pour commencer à utiliser **Conso API**, vous devez accéder à votre espace pe
 ::authButton
 ::
 
+Si le consentement échoue, vous pouvez essayer de résilier l'accès existant de Conso API depuis la page [partage de mes données avec des tiers](https://mon-compte-particulier.enedis.fr/partage-donnees-tiers), puis de redonner votre autorisation.
+
 À la fin de l'étape de consentement, vous obtiendrez un token personnel qui vous permettra de tester l'API depuis la page [exemples](/exemples).
 
-(La page [partage de mes données avec des tiers](https://mon-compte-particulier.enedis.fr/partage-donnees-tiers) dans [votre espace client Enedis](https://mon-compte-client.enedis.fr/) ne montrera **pas** "Conso API" dans les tiers de confiance - cela est normal).
+> **Migration 2026 :** Enedis prévoit de couper les anciennes API legacy à la mi-octobre 2026. Les appels utilisant les anciens types échoueront après cette coupure. [Consultez le guide de migration](/migration-2026) pour adapter vos requêtes.
 
 ## Comment utiliser Conso API ?
 

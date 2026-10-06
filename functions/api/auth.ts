@@ -5,7 +5,7 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, env }) => {
   const baseURI = env.SANDBOX ? 'https://ext.hml.api.enedis.fr' : 'https://mon-compte-particulier.enedis.fr';
 
   return Response.redirect(
-    `${baseURI}/dataconnect/v1/oauth2/authorize` +
+    `${baseURI}/dataconnect/v2/oauth2/authorize` +
       `?client_id=${env.CLIENT_ID}&state=${state}&duration=P3Y&response_type=code`
   );
 };

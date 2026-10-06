@@ -5,23 +5,23 @@ Le moyen le plus simple d'accéder aux données de Conso API est le module [@bok
 Toutes les routes de Conso API suivent le format suivant:
 
 ```git-commit
-https://conso.boris.sh/api/:type?prm=:prm&start=:start&end=:end
-                           ──┬──      ─┬─        ──┬──      ─┬─
-                             │         │           │         └─ Fin de la plage demandée
-                             │         │           │
-                             │         │           └─ Début de la plage demandée
-                             │         │
-                             │        Identifiant du point de livraison (PRM)
+https://conso.boris.sh/api/:type?pointId=:pointId&dateDebut=:dateDebut&dateFin=:dateFin
+                           ──┬──          ─┬─                ──┬──                 ─┬─
+                             │             │                   │        Fin de la plage
+                             │             │                   │
+                             │             │       Début de la plage demandée
+                             │             │
+                             │     Identifiant du point de livraison (PRM)
                              │
-                            Type de donnée à récupérer
+                  Type de donnée à récupérer
 ```
 
 ### Exemple
 
-Pour récupérer la consommation de chaque jour du mois de janvier 2023 pour le PRM 12345, la route à appeler est la suivante :
+Pour récupérer la consommation quotidienne du mois de janvier 2023 pour un PRM, la route à appeler est la suivante :
 
 ```yaml
-https://conso.boris.sh/api/daily_consumption?prm=12345&start=2023-01-01&end=2023-02-01
+https://conso.boris.sh/api/consommation_quotidienne?pointId=12345678901234&dateDebut=2023-01-01&dateFin=2023-02-01
 ```
 
 Plus d'exemples d'utilisation sont disponibles sur la page [exemples](/exemples).
@@ -30,30 +30,29 @@ Plus d'exemples d'utilisation sont disponibles sur la page [exemples](/exemples)
 
 ### Type de donnée
 
-Les valeurs possibles pour `:type` sont les suivantes:
+Les valeurs possibles pour `:type` sont les suivantes. Elles appellent les ressources de l'API mesure synchrone v2 d'Enedis :
 
-#### Données de consommation
+- `index_consommation`: Index de consommation
+- `index_production`: Index de production
+- `consommation_quotidienne`: Consommation quotidienne
+- `production_quotidienne`: Production quotidienne
+- `puissance_conso_max_quotidienne`: Puissance maximale de consommation
+- `courbe_de_charge_consommation`: Courbe de charge de consommation
+- `courbe_de_charge_production`: Courbe de charge de production
 
-- `daily_consumption`: Consommation quotidienne
-- `consumption_load_curve`: Courbe de charge (puissance moyenne de consommation sur des intervalles de 30 minutes)
-- `consumption_max_power`: Puissance maximale de consommation atteinte quotidiennement
+Pour `puissance_conso_max_quotidienne`, les paramètres `mesuresPas` (`P1D` ou `P1M`) et `grandeurPhysique` (`PMA` ou `TOUT`) sont facultatifs. Par défaut, `mesuresPas` vaut `P1D` et `grandeurPhysique` vaut `PMA`.
 
-#### Données de production
+### pointId
 
-- `daily_production`: Production quotidienne
-- `production_load_curve`: Courbe de charge (puissance moyenne produite sur des intervalles de 30 minutes)
+Identifiant du point de livraison (PRM), composé de 14 chiffres. Pour compatibilité, les anciens paramètres `prm`, `start` et `end` restent acceptés comme alias de `pointId`, `dateDebut` et `dateFin`.
 
-### PRM
+### dateDebut et dateFin
 
-Une suite de 14 chiffres qui identifie votre compteur Linky. Vous pouvez le trouver sur votre compteur en appuyant sur la touche :icon{name="mdi:plus-circle-outline"} jusqu’à lire la valeur du "numéro de PRM".
-
-### Start et end
-
-`:start` et `:end` sont les dates de début et fin de l'échantillon demandé, au format `YYYY-MM-DD`.
+`dateDebut` et `dateFin` sont les dates de début et fin de l'échantillon demandé, au format `YYYY-MM-DD`.
 
 La date de début est incluse, mais pas la date de fin.
 
-Par exemple, si `:start` vaut `2022-12-01` et end vaut `2022-12-03`, la réponse contiendra les données du 1 et 2 décembre, mais pas les données du 3.
+Par exemple, si `dateDebut` vaut `2022-12-01` et `dateFin` vaut `2022-12-03`, la réponse contiendra les données du 1 et 2 décembre, mais pas les données du 3.
 
 ## Authentification
 

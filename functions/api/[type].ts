@@ -1,19 +1,24 @@
-import axios from 'axios';
 import * as qs from 'qs';
 import pino from 'pino';
 import { z } from 'zod';
 import { getAPIToken } from '../../lib/token';
-import { dataPoints, dataURLs } from '../../lib/url';
+import { legacyDataPoints, legacyDataURLs, synchronousDataPoints, synchronousDataURLs } from '../../lib/url';
 import { isTokenValid } from '../../lib/auth';
 import { Env } from '../../lib/env';
 
 const logger = pino();
 
+function isSynchronousDataType(type: string): type is keyof typeof synchronousDataURLs {
+  return type in synchronousDataURLs;
+}
+
 const schema = z.object({
-  type: z.enum(dataPoints),
-  prm: z.string().length(14),
-  start: z.string().regex(/20[0-9]{2}-[0-9]{2}-[0-9]{2}/),
-  end: z.string().regex(/20[0-9]{2}-[0-9]{2}-[0-9]{2}/),
+  type: z.enum([...legacyDataPoints, ...synchronousDataPoints]),
+  pointId: z.string().length(14),
+  dateDebut: z.string().regex(/20[0-9]{2}-[0-9]{2}-[0-9]{2}/),
+  dateFin: z.string().regex(/20[0-9]{2}-[0-9]{2}-[0-9]{2}/),
+  mesuresPas: z.enum(['P1D', 'P1M']).optional(),
+  grandeurPhysique: z.enum(['PMA', 'TOUT']).optional(),
 });
 
 export const onRequest: PagesFunction<Env> = async ({ request: req, params, env }) => {
@@ -32,9 +37,11 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, params, env 
   // Validate input
   const input = schema.safeParse({
     type: params.type,
-    prm: searchParams.get('prm'),
-    start: searchParams.get('start'),
-    end: searchParams.get('end'),
+    pointId: searchParams.get('pointId') ?? searchParams.get('prm'),
+    dateDebut: searchParams.get('dateDebut') ?? searchParams.get('start'),
+    dateFin: searchParams.get('dateFin') ?? searchParams.get('end'),
+    mesuresPas: searchParams.get('mesuresPas') ?? undefined,
+    grandeurPhysique: searchParams.get('grandeurPhysique') ?? undefined,
   });
 
   if (input.success === false) {
@@ -48,7 +55,8 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, params, env 
     );
   }
 
-  const { type, prm, start, end } = input.data;
+  const { type, pointId, dateDebut, dateFin, mesuresPas, grandeurPhysique } = input.data;
+  const isSynchronousAPI = isSynchronousDataType(type);
 
   // Validate user token
   const authHeader = req.headers.get('Authorization');
@@ -59,7 +67,7 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, params, env 
       { status: 400 }
     );
   }
-  if (!(await isTokenValid(userToken, prm, JWT_SECRET))) {
+  if (!(await isTokenValid(userToken, pointId, JWT_SECRET))) {
     return Response.json(
       { status: 401, message: "Votre token est invalide ou ne permet pas d'accéder à ce PRM" },
       { status: 401 }
@@ -80,20 +88,39 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, params, env 
 
   // Fetch data
   try {
-    const response = await fetch(
-      `${BASE_URL}/${dataURLs[type]}?${qs.stringify({
-        start,
-        end,
-        usage_point_id: prm,
-      })}`,
-      {
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer ' + apiToken,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    let requestURL: string;
+    let query: Record<string, string | undefined>;
+    if (isSynchronousDataType(type)) {
+      const baseURL = new URL(BASE_URL);
+
+      // TODO Remove this once the metering data API is fully migrated to the new synchronous API
+      const host = baseURL.hostname === 'ext.prod.api.enedis.fr' ? 'gw.ext.prod.api.enedis.fr' : baseURL.host;
+      requestURL = `${baseURL.protocol}//${host}/mesure_synchrone_auto/v2/${synchronousDataURLs[type]}`;
+      query = {
+        pointId,
+        dateDebut,
+        dateFin,
+        ...(type === 'puissance_conso_max_quotidienne' && {
+          mesuresPas: mesuresPas ?? 'P1D',
+          grandeurPhysique: grandeurPhysique ?? 'PMA',
+        }),
+      };
+    } else {
+      requestURL = `${BASE_URL}/${legacyDataURLs[type]}`;
+      query = {
+        start: dateDebut,
+        end: dateFin,
+        usage_point_id: pointId,
+      };
+    }
+
+    const response = await fetch(`${requestURL}?${qs.stringify(query)}`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer ' + apiToken,
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (!response.ok) {
       let responseError: string | Record<string, any> = await response.text();
@@ -113,7 +140,13 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, params, env 
       );
     }
 
-    const data: { meter_reading: any } = await response.json();
+    const data: unknown = await response.json();
+    if (isSynchronousAPI) {
+      return Response.json(data);
+    }
+    if (typeof data !== 'object' || data === null || !('meter_reading' in data)) {
+      throw new Error('Invalid legacy API response');
+    }
     return Response.json(data.meter_reading);
   } catch (e) {
     logger.error({ message: 'cannot call Enedis', error: e });

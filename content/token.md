@@ -11,6 +11,8 @@ Vous avez terminé l'étape de consentement ! Vous pouvez maintenant utiliser co
 
 Une fois votre token enregistré en lieu sûr, rendez-vous sur la page [exemples](/exemples) pour tester l'API en direct.
 
+Vous pouvez résilier l'accès de Conso API à vos données à tout moment depuis votre espace client Enedis, dans la section [partage de mes données avec des tiers](https://mon-compte-particulier.enedis.fr/partage-donnees-tiers).
+
 ::alert
 <b>Rappel</b>
 <br/>
