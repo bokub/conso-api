@@ -1,12 +1,16 @@
 # Migration 2026
 
-Conso API migre progressivement des anciennes API Enedis vers l'API mesure synchrone v2. Enedis prévoit de couper les anciennes API legacy à la mi-octobre 2026. Après leur arrêt, les requêtes Conso API qui utilisent encore les anciens types de données échoueront.
+Le 28 septembre 2026, Enedis a sorti une nouvelle API _Mesure synchrone V2_ remplaçant l'ancienne API _Metering data V5_, qui permettait de récupérer vos données de consommation et de production.
+
+Tant que ces 2 API sont disponibles, Conso API vous permet d'appeler l'une ou l'autre avec le même token.
+
+Enedis a annoncé un délai de 2 semaines avant de couper l'ancienne API, vers la mi-octobre 2026. Après son arrêt, les requêtes Conso API qui utilisent encore les anciens types de données échoueront.
 
 Pour éviter une interruption, mettez à jour vos appels en utilisant les nouveaux types et noms de paramètres décrits ci-dessous.
 
 ## Types de données
 
-Remplacez les types legacy par leur équivalent dans l'API mesure synchrone v2 :
+Remplacez les types _Metering data V5_ par leur équivalent dans l'API _Mesure synchrone V2_ :
 
 | Ancien type              | Nouveau type                      |
 | ------------------------ | --------------------------------- |
@@ -48,6 +52,6 @@ curl 'https://conso.boris.sh/api/consommation_quotidienne?pointId=12345678901234
   -H 'Authorization: Bearer VOTRE_TOKEN'
 ```
 
-Le format de la réponse a changé et n'est plus du tout le même que celui de l'API legacy. Testez le nouveau format directement sur la page [exemples](/exemples).
+Le format de la réponse a changé et n'est plus du tout le même que celui de l'ancienne API. Testez le nouveau format directement sur la page [exemples](/exemples).
 
 Consultez la [documentation de l'API](/documentation) pour la liste complète des types et paramètres.
