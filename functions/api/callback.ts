@@ -36,9 +36,13 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, env }) => {
       throw new Error(`Subscribed services request failed: ${response.status}`);
     }
 
+    const jsonResponse = await response.json();
+
+    console.info('Subscribed services response', jsonResponse);
+
     const services = z
       .object({ serviceSouscrit: z.array(z.object({ pointId: z.string().optional() })).optional() })
-      .parse(await response.json());
+      .parse(jsonResponse);
 
     const prms = Array.from(
       new Set((services.serviceSouscrit ?? []).flatMap(({ pointId }) => (pointId ? [pointId] : [])))
