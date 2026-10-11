@@ -18,6 +18,7 @@ export default defineNuxtConfig({
       ignoreLocalhost: true,
       host: 'https://metrics.boris.sh',
       id: 'a6f6b02f-799d-4e48-9c45-85460818ddf6',
+      version: 2,
     },
   },
 });
