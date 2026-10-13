@@ -2,15 +2,16 @@ name: Ban abusing IPs
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '17 0,12 * * *'
+      timezone: Europe/Paris
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 18
+          node-version: 24
       - run: yarn install --frozen-lockfile
       - run: npm run ipban
         env:
