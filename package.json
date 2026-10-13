@@ -14,6 +14,7 @@
   "devDependencies": {
     "@bokub/prettier-config": "^2.1.0",
     "@cloudflare/workers-types": "^4.20240620.0",
+    "@logtail/edge": "^0.5.12",
     "@nuxt-themes/elements": "^0.5.2",
     "@nuxt-themes/typography": "^0.4.3",
     "@nuxt/content": "^2.3.0",

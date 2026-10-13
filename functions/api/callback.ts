@@ -1,19 +1,18 @@
 import { generateToken } from '../../lib/auth';
 import { Env } from '../../lib/env';
+import type { RequestData } from './_middleware';
 import { getAPIToken } from '../../lib/token';
 import { z } from 'zod';
-import pino from 'pino';
 
-const logger = pino();
-
-export const onRequest: PagesFunction<Env> = async ({ request: req, env }) => {
+export const onRequest: PagesFunction<Env, string, RequestData> = async ({ request: req, env, data }) => {
+  const { logger } = data;
   let autorisationId: number | undefined;
   const requestUrl = `${env.BASE_URL}/subscribed_services/v1/`;
 
   try {
     const { searchParams } = new URL(req.url);
     autorisationId = z.coerce.number().int().positive().parse(searchParams.get('autorisation_id'));
-    const apiToken = await getAPIToken(env);
+    const apiToken = await getAPIToken(env, logger);
 
     const response = await fetch(requestUrl, {
       method: 'POST',
@@ -22,23 +21,20 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, env }) => {
     });
     if (!response.ok) {
       const responseBody = await response.text();
-      logger.error(
-        {
-          requestUrl,
-          method: 'POST',
-          autorisationId,
-          status: response.status,
-          statusText: response.statusText,
-          responseBody,
-        },
-        'Subscribed services request failed'
-      );
+      logger.error('Subscribed services request failed', {
+        requestUrl,
+        method: 'POST',
+        autorisationId,
+        status: response.status,
+        statusText: response.statusText,
+        responseBody,
+      });
       throw new Error(`Subscribed services request failed: ${response.status}`);
     }
 
     const jsonResponse = await response.json();
 
-    console.info('Subscribed services response', jsonResponse);
+    logger.info('Subscribed services response', { jsonResponse });
 
     const services = z
       .object({ serviceSouscrit: z.array(z.object({ pointId: z.string().optional() })).optional() })
@@ -60,7 +56,11 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, env }) => {
       },
     });
   } catch (e) {
-    logger.error({ message: 'cannot generate Auth token', autorisationId, requestUrl, error: e });
+    logger.error(e instanceof Error ? e : String(e), {
+      message: 'cannot generate Auth token',
+      autorisationId,
+      requestUrl,
+    });
     return Response.json({ status: 500, message: 'internal server error' }, { status: 500 });
   }
 };

@@ -6,5 +6,7 @@ export interface Env {
   CLIENT_ID: string;
   CLIENT_SECRET: string;
   SANDBOX: string | undefined;
+  SOURCE_TOKEN?: string;
+  INGESTING_HOST: string;
   CONSO_API: KVNamespace;
 }

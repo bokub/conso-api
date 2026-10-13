@@ -1,12 +1,10 @@
 import * as qs from 'qs';
-import pino from 'pino';
 import { z } from 'zod';
 import { getAPIToken } from '../../lib/token';
 import { legacyDataPoints, legacyDataURLs, synchronousDataPoints, synchronousDataURLs } from '../../lib/url';
 import { isTokenValid } from '../../lib/auth';
 import { Env } from '../../lib/env';
-
-const logger = pino();
+import type { RequestData } from './_middleware';
 
 function isSynchronousDataType(type: string): type is keyof typeof synchronousDataURLs {
   return type in synchronousDataURLs;
@@ -21,7 +19,8 @@ const schema = z.object({
   grandeurPhysique: z.enum(['PMA', 'TOUT']).optional(),
 });
 
-export const onRequest: PagesFunction<Env> = async ({ request: req, params, env }) => {
+export const onRequest: PagesFunction<Env, string, RequestData> = async ({ request: req, params, env, data }) => {
+  const { logger } = data;
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       status: 200,
@@ -77,9 +76,9 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, params, env 
   // Get Enedis token
   let apiToken: string;
   try {
-    apiToken = await getAPIToken(env);
+    apiToken = await getAPIToken(env, logger);
   } catch (e) {
-    logger.error({ message: 'cannot refresh token', error: e });
+    logger.error(e instanceof Error ? e : String(e), { message: 'cannot refresh token' });
     return Response.json(
       { status: 500, message: 'Impossible de rafraîchir le token. Réessayez plus tard' },
       { status: 500 }
@@ -149,7 +148,7 @@ export const onRequest: PagesFunction<Env> = async ({ request: req, params, env 
     }
     return Response.json(data.meter_reading);
   } catch (e) {
-    logger.error({ message: 'cannot call Enedis', error: e });
+    logger.error(e instanceof Error ? e : String(e), { message: 'cannot call Enedis' });
     return Response.json({ status: 500, message: 'Erreur inconnue. Réessayez plus tard' }, { status: 500 });
   }
 };

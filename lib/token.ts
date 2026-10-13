@@ -1,12 +1,10 @@
 import * as qs from 'qs';
-import pino from 'pino';
 import { Env } from './env';
-
-const logger = pino();
+import type { RequestLogger } from './logging';
 
 const KV_KEY = 'access_token';
 
-export async function getAPIToken(env: Env): Promise<string> {
+export async function getAPIToken(env: Env, logger: RequestLogger): Promise<string> {
   const token = await env.CONSO_API.get(KV_KEY);
   if (token) {
     return token;
@@ -28,12 +26,12 @@ export async function getAPIToken(env: Env): Promise<string> {
     } catch (e) {
       body = `<unable to read body: ${String(e)}>`;
     }
-    logger.error({ status: response.status, statusText: response.statusText, body }, 'token fetch failed');
+    logger.error('token fetch failed', { status: response.status, statusText: response.statusText, body });
     return Promise.reject(new Error(`Token fetch failed: ${response.status} ${response.statusText}`));
   }
 
   const data: { access_token: string } = await response.json();
-  logger.info({ message: 'token refreshed', token: data.access_token });
+  logger.info('token refreshed');
 
   // Save in KV store
   await env.CONSO_API.put(KV_KEY, data.access_token, {
