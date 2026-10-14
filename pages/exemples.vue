@@ -106,10 +106,7 @@
       <prose-hr></prose-hr>
       <prose-h3 id="resultats" class="!my-0">Résultats</prose-h3>
 
-      <div v-if="hasChartData">
-        <div class="font-medium mb-2">Graphique</div>
-        <canvas id="chart"></canvas>
-      </div>
+      <ExampleChart :result="testResult" />
 
       <div>
         <div class="font-medium">Résultat brut</div>
@@ -121,18 +118,9 @@
 
 <script setup lang="ts">
   import { useToken } from '~/components/composables/useToken';
+  import ExampleChart from '~/components/charts/ExampleChart.vue';
   import axios from 'axios';
-  import { Chart, Colors, BarController, CategoryScale, LinearScale, BarElement, Tooltip } from 'chart.js';
-
-  type APIResult = {
-    grandeur?: Array<{
-      grandeurMetier?: string;
-      unite?: string;
-      points?: Array<{ d: string; v: string }>;
-    }>;
-  };
-
-  Chart.register(Colors, BarController, CategoryScale, LinearScale, BarElement, Tooltip);
+  import type { ExampleApiResult } from '~/types/exampleApi';
 
   useHead({
     title: "Conso API - Exemples d'utilisation",
@@ -157,9 +145,8 @@
   const start = ref(date.toISOString().slice(0, 10));
 
   const isLoading: Ref<boolean> = ref(false);
-  const testResult: Ref<null | APIResult> = ref(null);
+  const testResult: Ref<null | ExampleApiResult> = ref(null);
   const jsonTestResult: ComputedRef<string> = computed(() => JSON.stringify(testResult.value, null, 2));
-  const hasChartData = computed(() => testResult.value?.grandeur?.some((grandeur) => grandeur.points?.length));
 
   const prmListFromToken = computed(() => {
     try {
@@ -221,67 +208,8 @@
         location.hash = '';
         nextTick(() => {
           location.hash = '#resultats';
-          plotGraph();
         });
       });
-  }
-
-  function plotGraph() {
-    const chartElement: any | null = document.getElementById('chart');
-    const data = testResult.value?.grandeur?.flatMap((grandeur) =>
-      (grandeur.points ?? []).map((point) => ({
-        date: point.d,
-        value: Number(point.v),
-        label: grandeur.grandeurMetier ?? '',
-        unit: grandeur.unite ?? '',
-      }))
-    );
-    if (!chartElement) {
-      console.error('Cannot find chart canvas');
-      return;
-    }
-    if (!data) {
-      console.error('Nothing to plot');
-      return;
-    }
-
-    const formatter = new Intl.NumberFormat('fr-FR');
-
-    new Chart(chartElement, {
-      type: 'bar',
-      data: {
-        labels: data.map((row) => row.date),
-        datasets: [
-          {
-            label: data[0]?.label || '',
-            data: data.map((row) => row.value),
-          },
-        ],
-      },
-      options: {
-        elements: {
-          bar: {
-            backgroundColor: 'rgba(59, 130, 246, 0.5)',
-            borderWidth: 1,
-            borderColor: 'rgba(59, 130, 246, 1)',
-          },
-        },
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                return [
-                  data[context.dataIndex]?.label ? `${data[context.dataIndex].label} : ` : '',
-                  formatter.format(context.parsed.y || 0),
-                  ' ',
-                  data[context.dataIndex]?.unit,
-                ].join('');
-              },
-            },
-          },
-        },
-      },
-    });
   }
 </script>
 
