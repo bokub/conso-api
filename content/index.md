@@ -80,6 +80,9 @@ Tout abus pourra conduire à un **blocage de votre adresse IP** sans aucun avert
 Si votre IP se retrouve bloquée, sachez qu'il ne s'agit pas d'une erreur, mais bien la conséquence d'un abus significatif de votre part.
 <br/>
 Il est inutile de me contacter pour réclamer un déblocage, je préfère consacrer mon temps à améliorer le service pour les utilisateurs respectueux de mon travail.
+<br/>
+<br/>
+Lisez la page [blocage par IP](/blocage-ip) pour plus d'informations.
 ::
 
 ## Vous avez d'autres questions ?

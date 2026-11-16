@@ -19,11 +19,12 @@ Vous pouvez résilier l'accès de Conso API à vos données à tout moment depui
 Afin que Conso API puisse rester gratuit et accessible à tous, assurez-vous de l'utiliser de façon raisonnable et responsable !
 <br/>
 <br/>
-Ne faites aucun appel inutile, et évitez à tout prix les boucles de requêtes. Lisez le paragraphe
-<a target="_blank" href="/#bon-à-savoir">"bon à savoir"</a> pour plus d'informations.
-<br/>
+Ne faites aucun appel inutile, et évitez à tout prix les boucles de requêtes.
 <br/>
 Tout abus pourra conduire à un **blocage de votre adresse IP** sans aucun avertissement préalable.
+<br/>
+<br/>
+Lisez la page <a target="_blank" href="/blocage-ip">"blocage par IP"</a> pour plus d'informations.
 ::
 
 <br/>
