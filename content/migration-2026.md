@@ -4,7 +4,9 @@ Le 28 septembre 2026, Enedis a sorti une nouvelle API _Mesure synchrone V2_ remp
 
 Tant que ces 2 API sont disponibles, Conso API vous permet d'appeler l'une ou l'autre avec le même token.
 
-Enedis a annoncé un délai de 2 semaines avant de couper l'ancienne API, vers la mi-octobre 2026. Après son arrêt, les requêtes Conso API qui utilisent encore les anciens types de données échoueront.
+Enedis a annoncé un délai de 2 semaines avant de couper l'ancienne API, vers la mi-octobre 2026. La date **réelle** de coupure est pour le moment inconnue.
+
+Dès la coupure effective de l'ancienne API par Enedis, les requêtes Conso API qui utilisent encore les anciens types de données échoueront.
 
 Pour éviter une interruption, mettez à jour vos appels en utilisant les nouveaux types et noms de paramètres décrits ci-dessous.
 
